@@ -1,0 +1,6 @@
+-cp src
+-main Main
+-neko run.n
+-lib heaps
+-lib haxeui-core
+-lib haxelock

@@ -1,0 +1,53 @@
+= Haxelock
+
+**NOTE** this is still unstable, not all planned features are implemented yet.
+
+== Intent
+
+I decided to create this tool because I didn't find anything out there that I liked for managing library versions in haxelib. I didn't want something overly complicated and I wanted something small and dependency free.
+
+So sorry for another build manager / package manager / library tool, but I feel that this one has value.
+
+== Usage
+
+If you install it in your path you can use.
+
+```
+haxelock build.hxml
+```
+
+Or if you prefer to use in in haxelib you can run
+
+```
+haxelib install haxelock
+haxelib run haxelock build.hxml
+```
+
+(currently not on haxelib)
+
+== What Haxelock does
+
+The intent is to keep the last successful build state of the project, so anyone else using the project will not struggle with versions.
+
+* keeps track of project versions based on successful builds
+* uses haxelib to change / update versions
+
+It supports
+
+* haxelib, git, or local dev libraries (though need to be on git to do anything)
+* local or global repositories
+
+=== Give Me More Details
+
+**Haxelock** is a simple executable which calls *haxe*, *haxelib*, and *git.
+
+. Checks if there is a `haxelib.lock` file in the project root.
+** if it exists, it will check the libraries in that file against what is current in haxelib
+** it will attempt to change the versions to those in the file, and will let you know if it fails
+*** if it fails then it will stop the build process.
+ 
+. it will then build the project
+** if the project fails, it will echo the build failure and stop the process
+
+. it will then save the new passing libraries to the `haxelib.lock` file
+

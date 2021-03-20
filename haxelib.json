@@ -1,0 +1,6 @@
+{
+	"name" : "haxelock",
+	"description" : "Haxe & Haxelib build wrapper for library and Haxe version management",
+	"classPath" : "src",
+	"version" : "0.0.0"
+}
