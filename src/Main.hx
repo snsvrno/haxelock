@@ -1,39 +1,72 @@
 class Main {
+
+	// all the registered commands that haxelock can execute.
+	static private var commands : Array<commands.Command> = [
+		new commands.Build(),
+		new commands.Help(),
+	];
+
 	static public function main() {
 		
 		// checks the args if we passed a parameter.
 		// and then sets the file
 		var args = Sys.args();
-		if (args.length != 2) Sys.println("please supply a valid .hxml to build.");
-		else {
-			var buildfile = args[0];
 
-			// check if all the libraries are installed. will
-			// load the library if not exists, but will only give a
-			// warning if you are using a different version so you can
-			// correct it or 'force' this to be the new correct version.
-			//
-			// checks for OK status, if for any reason something goes wrong
-			// it will return false and we should not build.
-			if (!Check.versions(buildfile)) {
-				Sys.println("Failed to align locked version, aborting build.");
-				return;
+		// gets ride of that last bit, which is the haxelock executable
+		// file.
+		args.pop();
+
+		if (args.length >= 1) {
+			// finds out what the command is and removes
+			// it from the list of arguements.
+			var command = args.shift();
+			var commandRan  = false;
+
+			// runs through each registered command and sees if we have a 
+			// valid command.
+			for (c in commands) { 
+				if (c.isCommand(command)) {
+					// we want to check that we found a match so we don't display
+					// the help information at the end.
+					commandRan = true; 
+					c.run(command, args);
+				}
 			}
 
-			// build
-			switch (Haxe.build(buildfile)) {
-				case Success:
+			if (!commandRan) {
+				// ran if we didn't actually run a command
+				// so we can tell the user that their command
+				// wasn't valid and can give them the help so they
+				// can see what they should be doing instead.
 
-					// save the libraries
-					Save.libraries(buildfile);
-
-				case Failure(msg):
-
-					// stop and tell the user the build error
-					Sys.println(msg);
+				Sys.println('Command $command is not a valid command.');
+				for (c in commands) if (c.isCommand("help")) c.run([]);
 			}
 
+			/*
+
+			// checks for anything that ends in .hxml and then decides that the
+			// user wants to build that file.
+			if (param.length > 5 && param.substr(param.length-5,5) == ".hxml") build(args[0]);
+
+			// if we do install then we pass that and the rest of the args to haxelib
+			// and record what we did so we can make changes to the lock file.
+			if (param == "install" || param == "set") installLibrary(args);*/
 		}
 	}
+
+	/*
+
+	static private function installLibrary(args : Array<String>) {
+
+		if (Haxelib.setVersion(args[1], args[2])){
+			trace("save it");
+			i need to generic the load and save function so i cna reusei it better.
+		}
+	}
+
+	static private function help() {
+		Sys.print('help me');
+	}*/
 
 }
