@@ -1,4 +1,3 @@
-other.hxml
 -cp tests
 -cp src
 -lib utest

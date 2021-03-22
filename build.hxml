@@ -1,4 +1,3 @@
-other.hxml
 -cp src
 -main Main
 -neko run.n

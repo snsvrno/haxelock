@@ -2,8 +2,9 @@ package commands;
 
 class Build implements Command{
 
-	public var name : String = "Build";
-	public var doc : String = "n";
+	public var name : String = "build";
+	public var displayName : String = "<hxml file> (build)";
+	public var doc : String = "calls haxe to build the given hxml file.";
 	
 	public function new() {}
 
@@ -22,9 +23,13 @@ class Build implements Command{
 		var validEnvironment = true;
 		var lockfile = lock.Lockfile.open();
 		if (lockfile != null) {
+			Io.trace("lockfile found");
 			for (l in lockfile.libraries) {
 				switch(l.check()) {
 					case Ok:
+
+						if (l.version != null) Io.trace('${l.name} is on version ${l.version}');
+						else Io.trace('${l.name} is on commit ${l.commit}');
 						
 					case NotInstalled:
 						
@@ -35,7 +40,7 @@ class Build implements Command{
 
 						} else {
 
-							trace('${l.name} trying to install via GIT');
+							Io.trace('${l.name} trying to install via GIT');
 
 							// a git repo, we need to set the git version.
 							apps.Haxelib.setGit(l.name, l.url);
@@ -60,35 +65,20 @@ class Build implements Command{
 						validEnvironment = false;
 				}
 			}
-		}
+		} else Io.trace("lockfile not found, skipping checks.");
 
 		if (!validEnvironment) { 
-			Sys.println("Failed to align locked version, aborting build.");
+			Io.error("Failed to align locked version, aborting build.");
 			return;
+		} else Io.trace('all libraries are at locked versions');
+
+		switch(apps.Haxe.build(buildfile)) {
+			case Ok:
+				Io.trace("built successfully.");
+			
+			case Error(msg):
+				Io.error(msg);
 		}
-		
-		
-
-		// if (lockfile == null) lock.Lockfile.create(buildfile);
-
-		/*
-		if (!Check.versions(buildfile)) {
-			Sys.println("Failed to align locked version, aborting build.");
-			return;
-		}
-
-		// build
-		switch (Haxe.build(buildfile)) {
-			case Success:
-
-				// save the libraries
-				Save.libraries(buildfile);
-
-			case Failure(msg):
-
-				// stop and tell the user the build error
-				Sys.println(msg);
-		}*/
 
 	}
 
@@ -106,7 +96,12 @@ class Build implements Command{
 	}
 
 	public function help() {
+		Io.println('Usage: haxelock <hxml file>');
+		
+		Io.newline();
 
+		Io.tab();
+		Io.println("builds the given hxml file using haxe.");
 	}
 
 }

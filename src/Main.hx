@@ -1,9 +1,18 @@
 class Main {
 
-	// all the registered commands that haxelock can execute.
-	static private var commands : Array<commands.Command> = [
+	static public var version : String = "0.0.0";
+
+	/*** all the registered commands that haxelock can execute. */
+	static public var commands : Array<commands.Command> = [
 		new commands.Build(),
 		new commands.Help(),
+	];
+
+	/*** The list of switches that are active when running */
+	static public var switches : Array<String> = [];
+	/*** All valid switches are defined here. */
+	static public var validSwitches : Array<{name : String, ?long : String, ?short : String, description : String}> = [
+		{ name : "debug", long : "--debug", short : "-d", description: "shows debug information during execution." }
 	];
 
 	static public function main() {
@@ -12,61 +21,50 @@ class Main {
 		// and then sets the file
 		var args = Sys.args();
 
-		// gets ride of that last bit, which is the haxelock executable
-		// file.
-		args.pop();
+		
+		// finds out what the command is and removes
+		// it from the list of arguements.
+		var command = args.shift();
+		while (command != null && command.charAt(0) == "-") {
+			// we have a switch and we need to set it globally.
+			// we do it recursively so we can grab em all.
 
-		if (args.length >= 1) {
-			// finds out what the command is and removes
-			// it from the list of arguements.
-			var command = args.shift();
-			var commandRan  = false;
-
-			// runs through each registered command and sees if we have a 
-			// valid command.
-			for (c in commands) { 
-				if (c.isCommand(command)) {
-					// we want to check that we found a match so we don't display
-					// the help information at the end.
-					commandRan = true; 
-					c.run(command, args);
+			// we check if its a valid switch and only add it if
+			// it shows up, and we add the name, not the long or short.
+			for (v in validSwitches) {
+				if (v.short == command || v.long == command) {
+					if (!switches.contains(v.name)) switches.push(v.name);
 				}
 			}
 
-			if (!commandRan) {
-				// ran if we didn't actually run a command
-				// so we can tell the user that their command
-				// wasn't valid and can give them the help so they
-				// can see what they should be doing instead.
+			command = args.shift();
+		}
+		if (command == null) command = "help";
 
-				Sys.println('Command $command is not a valid command.');
-				for (c in commands) if (c.isCommand("help")) c.run([]);
+		var commandRan  = false;
+
+		// runs through each registered command and sees if we have a 
+		// valid command.
+		for (c in commands) { 
+			if (c.isCommand(command)) {
+				// we want to check that we found a match so we don't display
+				// the help information at the end.
+				commandRan = true; 
+				c.run(command, args);
 			}
-
-			/*
-
-			// checks for anything that ends in .hxml and then decides that the
-			// user wants to build that file.
-			if (param.length > 5 && param.substr(param.length-5,5) == ".hxml") build(args[0]);
-
-			// if we do install then we pass that and the rest of the args to haxelib
-			// and record what we did so we can make changes to the lock file.
-			if (param == "install" || param == "set") installLibrary(args);*/
 		}
-	}
 
-	/*
+		if (!commandRan) {
+			// ran if we didn't actually run a command
+			// so we can tell the user that their command
+			// wasn't valid and can give them the help so they
+			// can see what they should be doing instead.
 
-	static private function installLibrary(args : Array<String>) {
-
-		if (Haxelib.setVersion(args[1], args[2])){
-			trace("save it");
-			i need to generic the load and save function so i cna reusei it better.
+			Io.println('Command $command is not a valid command.');
+			for (c in commands) if (c.isCommand("help")) c.run([]);
 		}
-	}
 
-	static private function help() {
-		Sys.print('help me');
-	}*/
+
+	}
 
 }

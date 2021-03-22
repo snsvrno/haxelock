@@ -10,10 +10,7 @@ class Lockfile {
 	// alternate constructors
 	static public function open() : Null<Lockfile> {
 
-		if (sys.FileSystem.exists(filename) == false) {
-			Io.log('no Lockfile found');
-			return null;
-		}
+		if (sys.FileSystem.exists(filename) == false) return null;
 
 		var lock = new Lockfile();
 
