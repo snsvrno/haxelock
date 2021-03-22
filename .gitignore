@@ -1,2 +1,8 @@
+# the local haxelib folder, even the ones in the 
+# tests, so we need to be sure to manually add
+# the blank files to ensure that these folders will
+# be made when cloning the repo.
 .haxelib
-haxelib.lock
+
+# the compiled test build, don't need to save that.
+test.n

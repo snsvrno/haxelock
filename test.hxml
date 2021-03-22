@@ -1,0 +1,6 @@
+other.hxml
+-cp tests
+-cp src
+-lib utest
+-main Test
+-neko test.n
