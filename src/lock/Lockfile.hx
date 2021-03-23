@@ -42,10 +42,12 @@ class Lockfile {
 		return lock;
 	}
 
+	
 	/**
 	 * Creates a lockfile for the current project
 	 * @return Lockfile
 	 */
+	 /*
 	static public function create(buildfile : String) : Lockfile {
 		var lock = new Lockfile();
 		var hxml = apps.Hxml.load(buildfile);
@@ -61,7 +63,7 @@ class Lockfile {
 		lock.save();
 
 		return lock;
-	}
+	}*/
 
 	public function new() { }
 

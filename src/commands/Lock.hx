@@ -1,5 +1,7 @@
 package commands;
 
+import Io.println;
+
 class Lock implements Command {
 	private var switches : Array<Switch> = [
 		{ name : "all", description : "scans the current folder recusively and manages versions for all hxml files found.", long : "--all" }
@@ -24,14 +26,14 @@ class Lock implements Command {
 
 		var lockfile = new lock.Lockfile();
 		while(buildfile != null) {
-			Io.trace('reading file $buildfile');
+			Io.println('reading file $buildfile');
 
 			var usedlibraries = apps.Haxe.getLibraries(buildfile);
 
 			for (usedlib in usedlibraries) {
 				var lib = apps.Haxelib.getLibrary(usedlib);
 
-				Io.trace('found library $usedlib');
+				println('found library ${lib.name} ${lib.getVersion()}');
 				
 				// checks if a different version is in here.
 				// currently don't have a method of tracking different
@@ -59,6 +61,8 @@ class Lock implements Command {
 
 		// we tracked everything and we're ready to save the file.
 		lockfile.save();
+		
+		Io.println("lock file successfully created");
 
 		if (!wasrun) help();
 	}
