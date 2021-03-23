@@ -55,4 +55,30 @@ class Utils {
 		if (line.length > 0) splits.push(line);
 		return splits;
 	}
+
+	public static function getAllHxmlFiles(?path : String = ".", ?ignores : Array<String>) : Array<String> {
+		var files : Array<String> = [];
+
+		for (f in sys.FileSystem.readDirectory(path)) {
+
+			var skip = false;
+			if (ignores != null) for (i in ignores) {
+				if (i == f) skip = true;
+			}
+			if (skip) continue;
+
+			var subpath = haxe.io.Path.join([path, f]);
+
+			if (sys.FileSystem.isDirectory(subpath)) {
+
+				var subfiles = getAllHxmlFiles(subpath);
+				while(subfiles.length > 0) files.push(subfiles.shift());
+
+			} else if (subpath.length > 5 && subpath.substr(subpath.length-5,5) == ".hxml") {
+				files.push(subpath);
+			}
+		}
+
+		return files;
+	}
 }

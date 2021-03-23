@@ -11,11 +11,9 @@ function error(text : String) {
 	Sys.println("ERROR: " + text);
 }
 
-function trace(text : String, ?newline : Bool = true) {
+function trace(text : String) {
 	if (!Main.switches.contains("debug")) return;
-
-	if (newline) text += "\n";
-	Sys.print("TRACE: " + text);
+	trace("TRACE: " + text);
 }
 
 function warn(text : String) {

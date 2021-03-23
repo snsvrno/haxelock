@@ -5,13 +5,14 @@ class Main {
 	/*** all the registered commands that haxelock can execute. */
 	static public var commands : Array<commands.Command> = [
 		new commands.Build(),
+		new commands.Lock(),
 		new commands.Help(),
 	];
 
 	/*** The list of switches that are active when running */
 	static public var switches : Array<String> = [];
 	/*** All valid switches are defined here. */
-	static public var validSwitches : Array<{name : String, ?long : String, ?short : String, description : String}> = [
+	static public var validSwitches : Array<Switch> = [
 		{ name : "debug", long : "--debug", short : "-d", description: "shows debug information during execution." }
 	];
 

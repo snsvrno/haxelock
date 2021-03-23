@@ -4,7 +4,7 @@ class Lockfile {
 	
 	static public var filename : String = "haxelib.lock";
 	
-	public var libraries : Array<Library> = [];
+	public var libraries : Array<libraries.Library> = [];
 
 	////////////////////////////////////////////////////////////////
 	// alternate constructors
@@ -19,20 +19,25 @@ class Lockfile {
 		var libs = Reflect.getProperty(parsed, "libraries");
 		
 		for (libname in Reflect.fields(libs)) {
-			var newLibrary = new Library(libname);
 			var lib = Reflect.getProperty(libs, libname);
+
 			if (Reflect.hasField(lib, "version")) {
-				newLibrary.setVersion(Reflect.getProperty(lib, "version"));
+
+				var library = new libraries.Haxelib(libname, Reflect.getProperty(lib, "version"));
+				lock.libraries.push(library);
+
 			} else {
+
+				Io.error('git libraries are unimplemented.');
+				/*
 				newLibrary.setGitRaw(
 					Reflect.getProperty(lib, "url"),
 					Reflect.getProperty(lib, "commit"),
 					Reflect.getProperty(lib, "branch")
-				);
+				);*/
+
 			}
-			lock.libraries.push(newLibrary);
 		}
-		
 
 		return lock;
 	}
@@ -65,13 +70,17 @@ class Lockfile {
 	 */
 	public function save() {
 
+		/*
 		var libs = new Map<String, Any>();
 		for (l in libraries) {
 			var data = l.serialize();
 			if (data != null) libs.set(l.name,data);
 		}
+		*/
 		
-		var stringified = haxe.Json.stringify({ libraries : libs }, "  ");
+		//var stringified = haxe.Json.stringify({ libraries : libs }, "  ");
+
+		var stringified = haxe.Json.stringify(this, "  ");
 		sys.io.File.write(filename).writeString(stringified);
 	} 
 }

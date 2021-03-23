@@ -1,0 +1,1 @@
+typedef Switch = {name : String, ?long : String, ?short : String, description : String};

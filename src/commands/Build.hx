@@ -26,39 +26,18 @@ class Build implements Command{
 			Io.trace("lockfile found");
 			for (l in lockfile.libraries) {
 				switch(l.check()) {
-					case Ok:
 
-						if (l.version != null) Io.trace('${l.name} is on version ${l.version}');
-						else Io.trace('${l.name} is on commit ${l.commit}');
+					case Ok: Io.log('${l.name} is ${l.getVersion()}');
 						
-					case NotInstalled:
+					case NotInstalled | WrongVersion:
 						
-
-						if (l.version != null) { 
-
-							if (!apps.Haxelib.setVersion(l.name, l.version)) validEnvironment = false;
-
-						} else {
-
-							Io.trace('${l.name} trying to install via GIT');
-
-							// a git repo, we need to set the git version.
-							apps.Haxelib.setGit(l.name, l.url);
-
-							// make sure its running the same commit.
-							var local = apps.Haxelib.getLibrary(l.name);
-							if(!apps.Git.setCommit(local.path, l.url, l.branch, l.commit)) validEnvironment = false; 
+						Io.print('setting ${l.name} to ${l.getVersion()} ... ');
+						if (apps.Haxelib.setLibrary(l)) Io.println("success!");
+						else { 
+							validEnvironment = false;
+							Io.println("failed!");
 						}
 						
-					case WrongVersion: 
-						
-						if (!apps.Haxelib.setVersion(l.name, l.version)) validEnvironment = false;
-
-					case WrongCommit: 
-
-						var local = apps.Haxelib.getLibrary(l.name);
-						if(!apps.Git.setCommit(local.path, l.url, l.branch, l.commit)) validEnvironment = false; 
-					
 					case Other(message): 
 
 						Io.error(message);
@@ -70,7 +49,7 @@ class Build implements Command{
 		if (!validEnvironment) { 
 			Io.error("Failed to align locked version, aborting build.");
 			return;
-		} else Io.trace('all libraries are at locked versions');
+		} else if (lockfile != null) Io.trace('all libraries are at locked versions');
 
 		switch(apps.Haxe.build(buildfile)) {
 			case Ok:

@@ -24,15 +24,21 @@ class Haxelib {
 	}
 
 	/**
+	 * Sets the haxelib managed library to this one.
+	 * @param library 
+	 */
+	static public function setLibrary(library : libraries.Library) : Bool {
+		return true;
+	}
+
+	/**
 	 * get the currently used library.
 	 * @param library 
 	 * @return String
 	 */
-	static public function getLibrary(library : String) : Null<Library> {
+	static public function getLibrary(library : String) : Null<libraries.Library> {
 		var haxelibpath = getPath();
 		var libroot = haxelibpath + library;
-
-		var lib = new Library(library);
 
 		// checks that the folder exists, it should exists. if it isn't then it will
 		// let us know.
@@ -53,8 +59,10 @@ class Haxelib {
 			if (sys.FileSystem.exists(devpath + "\\.git")) {
 				Io.trace('Dev library $library is a git repository.');
 
-				lib.setGit(devpath);
-				return lib;
+				Io.trace("git is unimplemented");
+				return null;
+				//lib.setGit(devpath);
+				//return lib;
 
 			} else {
 				Io.error('Dev library $library is local and isn\'t version controlled. There is no way to track this.');
@@ -66,13 +74,15 @@ class Haxelib {
 		if (current == "git") {
 			// we are using the git version as the most recent version.
 
-			lib.setGit(libroot + "\\git");
-			return lib;
+			Io.trace("git is unimplemented");
+			return null;
+			//lib.setGit(libroot + "\\git");
+			//return lib;
 
 		} else {
 			// we are using a haxelib version.
 			
-			lib.setVersion(current);
+			var lib = new libraries.Haxelib(library, current);
 			return lib;
 		}
 
