@@ -20,15 +20,14 @@ class Haxelib {
 		
 		process.close();		
 		return string;
-
 	}
 
 	/**
 	 * Sets the haxelib managed library to this one.
 	 * @param library 
 	 */
-	static public function setLibrary(library : libraries.Library) : Bool {
-		return true;
+	static public function setLibrary(library : libraries.Library) : Result {
+		return library.set();
 	}
 
 	/**
@@ -89,27 +88,35 @@ class Haxelib {
 		return null;
 	}
 
-	static public function setVersion(name : String, version : String) : Bool {
-		Sys.print('Setting $name to $version ... ');
+	static public function runCommand(args : Array<String>) : Result {
+		var haxelibprocess = new sys.io.Process(command, args);
 
-		var haxelibprocess = new sys.io.Process(command, ["set", name, version, "--always"]);
+		var msg = haxelibprocess.stdout.readAll().toString();
+		var error = haxelibprocess.stderr.readAll().toString();
 
-		// hack to check if we failed. going to split by how the error is formatted so that
-		// we can see if we suceeded or failed on the switch.
-		var msg = haxelibprocess.stdout.readAll();
 		haxelibprocess.close();
 
-		var splitMessage = msg.toString().split("Error: [");
-		if (splitMessage.length == 1) { 
+		if (msg.length > 0) {
+
+			// if we don't have an error stream we should still check the 
+			// main stream for an error. because haxelib isn't good at 
+			// using the error stream.
+
+			var isAnError : Bool = true;
+			var split = msg.split("Error");
 			
-			Sys.println("Success!");
-			return true;
+			if (split.length == 1) {
+				split = msg.split("error");
+				if (split.length == 1) isAnError = false;
+			}
 
-		} else {
-
-			Sys.println("Failed!");
-			return false;
+			if (isAnError) error = msg;
+			else return Ok("haxelib\n" + msg);
 		}
+
+		if (error.length > 0) return Error("haxelib\n" + error);
+
+		return Error("internal error, end of statement.");
 	}
 
 	static public function setGit(name : String, url : String) {

@@ -1,10 +1,5 @@
 package apps;
 
-enum Result {
-	Ok;
-	Error(msg : String);
-}
-
 class Haxe {
 
 	/**
@@ -17,13 +12,21 @@ class Haxe {
 		return hxml.libraries;
 	}
 
+	static public function runCommand(args : Array<String>) : Result {
+		
+		var haxeprocess = new sys.io.Process("haxe", args);
+		var errormsg = haxeprocess.stderr.readAll().toString();
+		var msg = haxeprocess.stdout.readAll().toString();
+
+		if (errormsg.length > 0) return Error(errormsg);
+		else return Ok(msg);
+		
+	}
+
 	static public function build(buildfile : String) : Result {
 		Io.trace('building $buildfile');
 
-		var haxeprocess = new sys.io.Process("haxe", [buildfile]);
-		var errormsg = haxeprocess.stderr.readAll();
-		
-		if (errormsg.length > 0) return Error(errormsg.toString());
-		else return Ok;
+		var result = runCommand([buildfile]);
+		return result;
 	}
 }

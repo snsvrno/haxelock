@@ -32,10 +32,17 @@ class Build implements Command{
 					case NotInstalled | WrongVersion:
 						
 						Io.print('setting ${l.name} to ${l.getVersion()} ... ');
-						if (apps.Haxelib.setLibrary(l)) Io.println("success!");
-						else { 
-							validEnvironment = false;
-							Io.println("failed!");
+						
+						switch(apps.Haxelib.setLibrary(l)) {
+
+							case Ok(msg):
+								Io.println("success!");
+								Io.passthrough(msg);
+							case Error(error):
+								validEnvironment = false;
+								Io.println("failed!");
+								Io.passthrough(error);
+
 						}
 						
 					case Other(message): 
@@ -52,7 +59,7 @@ class Build implements Command{
 		} else if (lockfile != null) Io.trace('all libraries are at locked versions');
 
 		switch(apps.Haxe.build(buildfile)) {
-			case Ok:
+			case Ok(msg):
 				Io.trace("built successfully.");
 			
 			case Error(msg):

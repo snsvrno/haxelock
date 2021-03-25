@@ -28,6 +28,11 @@ class Haxelib implements Library {
 		return Other('general error.');
 	}
 
+	public function set() : apps.Result {
+		var result = apps.Haxelib.runCommand(["set", name, version, "--always"]);
+		return result;
+	}
+
 	public function getVersion() : String {
 		return version;
 	}

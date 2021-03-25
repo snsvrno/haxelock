@@ -20,6 +20,15 @@ function warn(text : String) {
 	Sys.println("WARN: " + text);
 }
 
+function passthrough(text : String) {
+	if (Main.switches.contains("passthroughoutput")) {
+		var lines = Utils.makeLines(text);
+		for (l in lines) {
+			tab(); println(l);
+		}
+	}
+}
+
 function print(text : String, ?length : Int) {
 	var fulltext = text;
 

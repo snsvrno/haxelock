@@ -52,4 +52,10 @@ interface Library {
 	 * @return String
 	 */
 	public function getVersion() : String;
+
+	/**
+	 * Sets this library as the current library in haxelib.
+	 * @return Bool
+	 */
+	public function set() : apps.Result;
 }

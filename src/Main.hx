@@ -13,7 +13,8 @@ class Main {
 	static public var switches : Array<String> = [];
 	/*** All valid switches are defined here. */
 	static public var validSwitches : Array<Switch> = [
-		{ name : "debug", long : "--debug", short : "-d", description: "shows debug information during execution." }
+		{ name : "debug", long : "--debug", short : "-d", description: "shows debug information during execution." },
+		{ name : "passthroughoutput", long : "--output", short : "-o", description: "shows output from all nested commands like git, haxe, and haxelib." }
 	];
 
 	static public function main() {
