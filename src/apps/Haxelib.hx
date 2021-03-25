@@ -104,7 +104,7 @@ class Haxelib {
 
 			var isAnError : Bool = true;
 			var split = msg.split("Error");
-			
+
 			if (split.length == 1) {
 				split = msg.split("error");
 				if (split.length == 1) isAnError = false;
@@ -116,7 +116,7 @@ class Haxelib {
 
 		if (error.length > 0) return Error("haxelib\n" + error);
 
-		return Error("internal error, end of statement.");
+		return Ok("");
 	}
 
 	static public function setGit(name : String, url : String) {
