@@ -5,6 +5,7 @@ class Main {
 	/*** all the registered commands that haxelock can execute. */
 	static public var commands : Array<commands.Command> = [
 		new commands.Build(),
+		new commands.List(),
 		new commands.Lock(),
 		new commands.Set(),
 		new commands.Help(),
