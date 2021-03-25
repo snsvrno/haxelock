@@ -6,6 +6,7 @@ class Main {
 	static public var commands : Array<commands.Command> = [
 		new commands.Build(),
 		new commands.Lock(),
+		new commands.Set(),
 		new commands.Help(),
 	];
 

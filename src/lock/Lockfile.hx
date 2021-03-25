@@ -1,4 +1,5 @@
 package lock;
+import libraries.Library.LibraryTools;
 
 class Lockfile {
 	
@@ -16,10 +17,13 @@ class Lockfile {
 
 		var contents = sys.io.File.read(filename).readAll().toString();
 		var parsed = haxe.Json.parse(contents);
-		var libs = Reflect.getProperty(parsed, "libraries");
+		var libs = cast(Reflect.getProperty(parsed, "libraries"), Array<Dynamic>);
 		
-		for (libname in Reflect.fields(libs)) {
-			var lib = Reflect.getProperty(libs, libname);
+		for (i in 0 ... libs.length) {
+			var lib = libs[i];
+			var libname = Reflect.getProperty(lib, "name");
+			
+			if (libname == null) throw("error in lockfile, library doesn't have a name?");
 
 			if (Reflect.hasField(lib, "version")) {
 
@@ -28,7 +32,7 @@ class Lockfile {
 
 			} else {
 
-				Io.error('git libraries are unimplemented.');
+				Io.trace('git libraries are unimplemented.');
 				/*
 				newLibrary.setGitRaw(
 					Reflect.getProperty(lib, "url"),
@@ -39,7 +43,43 @@ class Lockfile {
 			}
 		}
 
+		// sorts the libraries so they are alphabetical.
+		lock.libraries.sort(function(a : libraries.Library, b : libraries.Library)  {
+			if (a.name == b.name) return 0;
+			if (a.name > b.name) return 1;
+			else return -1;
+		});
+
 		return lock;
+	}
+
+	static public function set(library : libraries.Library) {
+
+		var lock = open();
+
+		for (l in lock.libraries) { 
+			if (LibraryTools.isEqual(l,library)) {
+				Io.println('locked version of ${library.name} is already set to ${library.getVersion()}');
+				return;
+			}
+		}
+
+		Io.print('locking version of ${library.name} to ${library.getVersion()}');
+
+		// checks if we already have a library with this name defined, and
+		// if we do then we remove it.
+		for (l in lock.libraries) {
+			if (l.name == library.name) {
+				Io.print(' replacing ${l.getVersion()}');
+
+				lock.libraries.remove(l);
+				break;
+			}
+		}
+
+		Io.newline();
+		lock.libraries.push(library);
+		lock.save();
 	}
 
 	
