@@ -21,7 +21,7 @@ class Test extends utest.Test {
 		process.close();
 
 		// checks that the library is the version we want.
-		Assert.equals("1.9.0", apps.Haxelib.getLibrary("heaps").version);
+		Assert.equals("1.9.0", apps.Haxelib.getLibrary("heaps").getVersion());
 
 		// running the build, equivalent to the user running a build with haxelock.
 		var build = new commands.Build();
@@ -29,7 +29,7 @@ class Test extends utest.Test {
 
 		// checks to see if what expected happened, updating the version of 'heaps'
 		// to the one listed in the lock file.
-		Assert.equals("1.9.1", apps.Haxelib.getLibrary("heaps").version);		
+		Assert.equals("1.9.1", apps.Haxelib.getLibrary("heaps").getVersion());		
 	}
 
 }
