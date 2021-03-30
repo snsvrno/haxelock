@@ -24,8 +24,6 @@ class Haxe {
 	}
 
 	static public function build(buildfile : String) : Result {
-		Io.trace('building $buildfile');
-
 		var result = runCommand([buildfile]);
 		return result;
 	}
