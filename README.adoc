@@ -10,6 +10,8 @@ So sorry for another build manager / package manager / library tool, but I feel 
 
 == Usage
 
+**Haxelock** calls other apps and scripts (**Haxe, **Haxelib**, **Git**) when running. These should be available in the path.
+
 If you install it in your path you can use.
 
 ```
@@ -27,19 +29,21 @@ haxelib run haxelock build.hxml
 
 == What Haxelock does
 
-The intent is to keep the last successful build state of the project, so anyone else using the project will not struggle with versions.
+*Haxelock* allows you to track and manage what verions of what libraries are used to build your projects.
 
-* keeps track of project versions based on successful builds
-* uses haxelib to change / update versions
+* keeps track of project library versions
+* uses haxelib, git to change / update versions
+* automatically checks on an "upgrade" if the project still builds
 
-It supports
+It currently supports
 
-* haxelib, git, or local dev libraries (though need to be on git to do anything)
-* local or global repositories
+* haxelib libraries
+
+Git and Dev libraries will be implemented next.
 
 === Give Me More Details
 
-**Haxelock** is a simple executable which calls *haxe*, *haxelib*, and *git.
+**Haxelock** is a simple executable which calls *haxe*, *haxelib*, and *git*.
 
 . Checks if there is a `haxelib.lock` file in the project root.
 ** if it exists, it will check the libraries in that file against what is current in haxelib
@@ -47,7 +51,17 @@ It supports
 *** if it fails then it will stop the build process.
  
 . it will then build the project
-** if the project fails, it will echo the build failure and stop the process
+** if the project fails, it will echo the build failure
 
-. it will then save the new passing libraries to the `haxelib.lock` file
+=== Commands
 
+These are the currently implemented commands and their function
+
+* `haxelock <file.hxml>` : builds the passed hxml file with the tracked versions.
+* `haxelock upgrade <library, library>` : used to update a library(s) and test the project to ensure that change in library version doesn't break the project.
+* `haxelock list` : lists all tracked libraries and their version.
+* `haxelock lock <file.hxml>` : creates a lockfile from the given hxml file, can also be made to use all .hxml files if desired.
+* `haxelock set <library> <version>` set a specific library to a specific version.
+* `haxelock help` list more information about haxelock and haxelock commands.
+
+Some of these commands have switches to modify behavior, refer the to the specific help section to see what to do i.e. `haxelock help upgrade`
