@@ -31,5 +31,4 @@ class Test extends utest.Test {
 		// to the one listed in the lock file.
 		Assert.equals("1.9.1", apps.Haxelib.getLibrary("heaps").getVersion());		
 	}
-
 }

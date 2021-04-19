@@ -10,6 +10,12 @@ class List implements Command{
 
 	public function run(?buildfile : String, args : Array<String>) {
 		var lock = lock.Lockfile.open();
+		
+		if (lock == null) {
+			Io.println('no haxe.lock file found, this project is not currently being tracked.');
+			return;		
+		}
+
 		for (l in lock.libraries) {
 			Io.println('${l.name}: ${l.getVersion()}');
 		}		

@@ -42,7 +42,7 @@ class Haxelib {
 		// checks that the folder exists, it should exists. if it isn't then it will
 		// let us know.
 		if (!sys.FileSystem.exists(libroot)) { 
-			Io.error('can\'t find the library $library. expected to find it here: $libroot');
+			Io.trace('can\'t find the library $library. expected to find it here: $libroot');
 			return null;
 		}
 		
