@@ -60,11 +60,10 @@ class Lock implements Command {
 		}
 
 		// we tracked everything and we're ready to save the file.
-		lockfile.save();
-		
-		Io.println("lock file successfully created");
-
-		if (!wasrun) help();
+		if (wasrun) { 
+			lockfile.save();
+			Io.println("lock file successfully created");
+		} else help();
 	}
 
 	public function help() {

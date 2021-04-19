@@ -17,7 +17,11 @@ class Lockfile {
 
 		var contents = sys.io.File.read(filename).readAll().toString();
 		var parsed = haxe.Json.parse(contents);
-		var libs = cast(Reflect.getProperty(parsed, "libraries"), Array<Dynamic>);
+		
+		// checks that it is formatted correctly. throws an error if we don't
+		// get the expected type, which is an array.
+		var libs = try { cast(Reflect.getProperty(parsed, "libraries"), Array<Dynamic>);
+		} catch (_) throw('malformed lockfile at $filename, please recreate.');
 		
 		for (i in 0 ... libs.length) {
 			var lib = libs[i];
