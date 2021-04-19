@@ -1,0 +1,25 @@
+{
+  "skipTerminateQuickPick": true,
+  "skipSwitchToOutput": false,
+  "skipErrorMessage": true,
+  "commands": [
+    {
+      "text": "✪ Build Neko",
+      "color": "limegreen",
+      "commandType":"palette",
+      "command": "workbench.action.tasks.runTask|Neko",
+      "alignment": "right",
+      "skipTerminateQuickPick": false,
+      "priority": 5
+    },
+    {
+      "text": "Test",
+      "color": "cyan",
+      "commandType":"palette",
+      "command": "workbench.action.tasks.runTask|Test",
+      "alignment": "right",
+      "skipTerminateQuickPick": false,
+      "priority": 0
+    }
+  ]
+}

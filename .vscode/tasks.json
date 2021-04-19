@@ -1,0 +1,63 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Neko",
+            "type": "hxml",
+            "file": "build.hxml",
+            "presentation": {
+                "reveal": "never",
+                "panel": "dedicated",
+                "clear": true
+            },
+            "problemMatcher": ["$haxe"],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "Test (build)",
+            "type": "hxml",
+            "file": "test.hxml",
+            "presentation": {
+                "reveal": "never",
+                "panel": "dedicated",
+                "clear": true
+            },
+            "problemMatcher": ["$haxe"],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "Test (run)",
+            "type": "shell",
+            "command": "neko test.n",
+            "problemMatcher": {
+                "owner": "neko",
+                "fileLocation": ["relative", "${workspaceFolder}"],
+                "pattern": [
+                    {
+                        "regexp": "^  ([^:\\ ]*):",
+                        "file": 1
+                    },
+                    {
+                        "regexp": "    line: ([0-9]+), ([^\n]+)",
+                        "line": 1,
+                        "message": 2,
+                        "loop": true
+                    }
+                ]
+            }
+        },
+        {
+            "label": "Test",
+            "dependsOn" : ["Test (build)", "Test (run)"],
+            "dependsOrder": "sequence"
+        }
+    ]
+}
