@@ -1,5 +1,11 @@
 package commands;
 
+private enum UpgradeStatus {
+	Failed;
+	Suceeded;
+	NoUpgrade;
+}
+
 class Upgrade implements Command {
 	private var switches : Array<Switch> = [
 		{ name : "test hxml", description : "the build file to test if the upgrade is successful", long : "--hxml" }
@@ -14,11 +20,16 @@ class Upgrade implements Command {
 	public function run(?command : String, args : Array<String>) {
 		// if the upgrade was successful, so we can check if we should try to do the 
 		// verification build or cancel.
-		var status = true;
+		var status : UpgradeStatus = NoUpgrade;
 
 		// the existing lock file, so we can revert back to it if the test build
 		// fails.
 		var lock = lock.Lockfile.open();
+
+		if (lock == null) {
+			Io.println('no haxe.lock file found, this project is not currently being tracked.');
+			return;
+		}
 
 		var buildfiles : Array<String> = [];
 		var libraries : Array<String> = [];
@@ -45,19 +56,21 @@ class Upgrade implements Command {
 			Io.log('upgrading all tracked libraries');
 
 			for (l in lock.libraries) {
-				if (!upgradeLibrary(l.name)) status = false;
+				var individualStatus = upgradeLibrary(l.name);
+				if (individualStatus == Suceeded && status != Failed) status = Suceeded;
+				else if (individualStatus == Failed) status = Failed;
 			}
 
 		} else {
 			// we are going to only do the local tracked libraries.
 			for (l in libraries) {
-				if (!upgradeLibrary(l)) status = false;
+				var individualStatus = upgradeLibrary(l);
+				if (individualStatus == Suceeded && status != Failed) status = Suceeded;
+				else if (individualStatus == Failed) status = Failed;
 			}
 		}
 
-		if (status == false) {
-			return;
-		} else {
+		if (status == Suceeded) {
 			if (buildfiles.length == 0) {
 				buildfiles = Utils.getAllHxmlFiles([".haxelib","test","tests"]);
 			}
@@ -88,6 +101,12 @@ class Upgrade implements Command {
 				lock.save();
 				Io.println("new lockfile saved");
 			}
+		} else if (status == NoUpgrade) {
+			Io.println('upgrade cancelled, no libraries have changed.');
+			return;
+		} else {
+			Io.println('upgrade cancelled, error upgrading one or more libraries.');
+			return;
 		}
 
 	}
@@ -122,8 +141,14 @@ class Upgrade implements Command {
 
 	public function isCommand(parameter : String) : Bool return parameter == name;
 
-	private function upgradeLibrary(library : String) : Bool {
-		Io.log('upgrading library $library');
+	/**
+	 * runs a haxelib upgrade command on the library, will
+	 * return a true if there isn't any error. returns a false
+	 * if there is an error with the upgrade.
+	 * @param library 
+	 * @return UpgradeStatus [Suceeded|NoUpgrade|Failed]
+	 */
+	private function upgradeLibrary(library : String) : UpgradeStatus {
 
 		// checks if we are tracking this library, if we are not tracking this
 		// library then we don't do anything ..
@@ -137,22 +162,24 @@ class Upgrade implements Command {
 					var version = apps.Haxelib.getLibrary(l.name);
 					if (version.getVersion() != l.getVersion()) {
 						Io.println('$library upgraded from ${l.getVersion()} to ${version.getVersion()}');
+						return Suceeded;
 					}
 
 					// we finished the update.
-					return true;
+					Io.log('upgrading library $library ... no change');
+					return NoUpgrade;
 
 				case Error(output):
 					if (Main.switches.contains("passthroughoutput")) Io.passthrough(output);
 					Io.error('failed to upgrade library $library');
 
-					return false;
+					return Failed;
 			}
 
 		}
 
 		Io.error('the library $library is not tracked by haxelock. used `set` to start tracking it.');
-		return false;
+		return Failed;
 
 	}
 }
