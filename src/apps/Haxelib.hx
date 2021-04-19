@@ -47,15 +47,15 @@ class Haxelib {
 		}
 		
 		// first we check if we are using a DEV library, defined by the presence of a dev file.
-		if (sys.FileSystem.exists(libroot + "\\.dev")) {
+		if (sys.FileSystem.exists(haxe.io.Path.join([libroot,".dev"]))) {
 			Io.trace('Library $library has a .dev file.');
 
-			var devpath = sys.io.File.read(libroot + "\\.dev").readAll().toString();
+			var devpath = sys.io.File.read(haxe.io.Path.join([libroot, ".dev"])).readAll().toString();
 			devpath = Utils.cleanString(devpath);
 
 			// we need to check if this library is a git repository, that is the only way we know
 			// how to keep track of it.
-			if (sys.FileSystem.exists(devpath + "\\.git")) {
+			if (sys.FileSystem.exists(haxe.io.Path.join([devpath,".git"]))) {
 				Io.trace('Dev library $library is a git repository.');
 
 				Io.trace("git is unimplemented");
@@ -69,7 +69,7 @@ class Haxelib {
 		}
 
 		// next we'll check what is defined as the current version in the current file.
-		var current = Utils.cleanString(sys.io.File.read(libroot + "\\.current").readAll().toString());
+		var current = Utils.cleanString(sys.io.File.read(haxe.io.Path.join([libroot, ".current"])).readAll().toString());
 		if (current == "git") {
 			// we are using the git version as the most recent version.
 

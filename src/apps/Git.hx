@@ -11,7 +11,15 @@ class Git {
 
 	static public function getUpstreamUrl(path : String) {
 		
-		var gitprocess = new sys.io.Process(command, ["--git-dir", path + "\\.git", "--work-tree", path + "\\.git", "config", "--get", "remote.origin.url"]);
+		var gitprocess = new sys.io.Process(command, [
+			"--git-dir", 
+			haxe.io.Path.join([path, ".git"]), 
+			"--work-tree", 
+			haxe.io.Path.join([path, ".git"]),
+			 "config", 
+			 "--get", 
+			 "remote.origin.url"
+		]);
 
 		var string = gitprocess.stdout.readAll().toString();
 		string = Utils.cleanString(string);
@@ -22,7 +30,15 @@ class Git {
 
 	static public function getBranch(path : String) { 
 
-		var gitprocess = new sys.io.Process(command, ["--git-dir", path + "\\.git", "--work-tree", path + "\\.git", "rev-parse", "--abbrev-ref", "HEAD"]);
+		var gitprocess = new sys.io.Process(command, [
+			"--git-dir", 
+			haxe.io.Path.join([path, ".git"]), 
+			"--work-tree", 
+			haxe.io.Path.join([path, ".git"]), 
+			"rev-parse", 
+			"--abbrev-ref", 
+			"HEAD"
+		]);
 
 		var string = gitprocess.stdout.readAll().toString();
 		string = Utils.cleanString(string);
@@ -33,7 +49,14 @@ class Git {
 
 	static public function getCommit(path : String, ?length : Int = 6) {
 
-		var gitprocess = new sys.io.Process(command, ["--git-dir", path + "\\.git", "--work-tree", path + "\\.git", "rev-parse", "HEAD"]);
+		var gitprocess = new sys.io.Process(command, [
+			"--git-dir", 
+			haxe.io.Path.join([path, ".git"]), 
+			"--work-tree", 
+			haxe.io.Path.join([path, ".git"]), 
+			"rev-parse", 
+			"HEAD"
+		]);
 
 		var string = gitprocess.stdout.readAll().toString();
 		string = Utils.cleanString(string);
@@ -44,7 +67,14 @@ class Git {
 
 	static public function status(path : String) : Status {
 		
-		var gitprocess = new sys.io.Process(command, ["--git-dir", path + "\\.git", "--work-tree", path + "\\.git", "status", "--porcelain"]);
+		var gitprocess = new sys.io.Process(command, [
+			"--git-dir", 
+			haxe.io.Path.join([path, ".git"]), 
+			"--work-tree", 
+			haxe.io.Path.join([path, ".git"]), 
+			"status", 
+			"--porcelain"
+		]);
 		var output = gitprocess.stdout.readAll().toString();
 
 		var files = Utils.makeLines(output);
