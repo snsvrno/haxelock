@@ -59,9 +59,3 @@ interface Library {
 	 */
 	public function set() : apps.Result;
 }
-
-class LibraryTools {
-	static public function isEqual(a : Library, b : Library) : Bool {
-		return a.source == b.source && a.getVersion() == b.getVersion();
-	}
-}

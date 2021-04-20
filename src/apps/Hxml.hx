@@ -4,6 +4,13 @@ class Hxml {
 
 	public var libraries : Array<String> = [];
 
+	/**
+	 * parses the hxml file, loading the list of libraries required.
+	 * will recursively look through all the hxml files if they are
+	 * referenced inside this hxml file.
+	 * @param hxmlfilepath 
+	 * @return Null<Hxml>
+	 */
 	static public function load(hxmlfilepath : String) : Null<Hxml> {
 		var hxml = new Hxml();
 
@@ -40,42 +47,6 @@ class Hxml {
 
 			}
 		}
-
-		/*
-		var i = 0;
-		while(true) {
-			
-			var char = contents.charAt(i);
-
-			// checks if we have a '-lib' or '--lib'
-			if (char == "-" && 
-			(contents.substr(i+1,3) == "lib") || (contents.substr(i+1,4) == "-lib")) {
-
-				// we move the counter to the space.
-				while(contents.charAt(i) != " ") i += 1;
-	
-				// we add one more so we are at the first character
-				i += 1;
-
-				// we start building the library name.
-				char = contents.charAt(i);
-				var word = "";
-
-				// grabs all the characters until we get to a new line characer or a space.
-				while(char != "\r" && char != "\n" && char != " " && i < contents.length) {
-					word += char;
-
-					i += 1;
-					char = contents.charAt(i);
-				}
-
-				hxml.libraries.push(new Library(word));
-			} 
-
-			i += 1;
-			if (i >= contents.length) break;
-		}
-		*/
 
 		return hxml;
 	}

@@ -1,5 +1,4 @@
 package lock;
-import libraries.Library.LibraryTools;
 
 class Lockfile {
 	
@@ -29,6 +28,10 @@ class Lockfile {
 			
 			if (libname == null) throw("error in lockfile, library doesn't have a name?");
 
+			var library = libraries.Tools.parseBySource(lib);
+			if (library != null) lock.libraries.push(library);
+
+			/*
 			if (Reflect.hasField(lib, "version")) {
 
 				var library = new libraries.Haxelib(libname, Reflect.getProperty(lib, "version"));
@@ -42,9 +45,10 @@ class Lockfile {
 					Reflect.getProperty(lib, "url"),
 					Reflect.getProperty(lib, "commit"),
 					Reflect.getProperty(lib, "branch")
-				);*/
+				);
 
 			}
+			*/
 		}
 
 		// sorts the libraries so they are alphabetical.
@@ -62,7 +66,7 @@ class Lockfile {
 		var lock = open();
 
 		for (l in lock.libraries) { 
-			if (LibraryTools.isEqual(l,library)) {
+			if (libraries.Tools.isEqual(l,library)) {
 				Io.println('locked version of ${library.name} is already set to ${library.getVersion()}');
 				return;
 			}

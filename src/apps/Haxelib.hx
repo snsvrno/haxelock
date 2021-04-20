@@ -45,47 +45,51 @@ class Haxelib {
 			Io.trace('can\'t find the library $library. expected to find it here: $libroot');
 			return null;
 		}
-		
-		// first we check if we are using a DEV library, defined by the presence of a dev file.
-		if (sys.FileSystem.exists(haxe.io.Path.join([libroot,".dev"]))) {
-			Io.trace('Library $library has a .dev file.');
 
-			var devpath = sys.io.File.read(haxe.io.Path.join([libroot, ".dev"])).readAll().toString();
-			devpath = Utils.cleanString(devpath);
+		return libraries.Tools.parseFromPath(library, libroot);
+	}
 
-			// we need to check if this library is a git repository, that is the only way we know
-			// how to keep track of it.
-			if (sys.FileSystem.exists(haxe.io.Path.join([devpath,".git"]))) {
-				Io.trace('Dev library $library is a git repository.');
+	/**
+	 * gets all the locally setup libraries for the given library ...
+	 * with return multiple versions of the same library and possibly
+	 * a git repository if set and locally tracked.
+	 * @param library 
+	 * @return Array<libraries.Library>
+	 */
+	static public function getAllLibraries(library : String) : Array<libraries.Library> {
+		var haxelibpath = getPath();
+		var libroot = haxelibpath + library;
 
-				Io.trace("git is unimplemented");
-				return null;
-				//lib.setGit(devpath);
-				//return lib;
+		var libs : Array<libraries.Library> = [];
 
-			} else {
-				Io.error('Dev library $library is local and isn\'t version controlled. There is no way to track this.');
+		// checks that the folder exists, it should exists. if it isn't then it will
+		// let us know.
+		if (!sys.FileSystem.exists(libroot)) { 
+			Io.trace('can\'t find the library $library. expected to find it here: $libroot');
+			return libs;
+		}
+
+		for (f in sys.FileSystem.readDirectory(libroot)) {
+			var fullPath = haxe.io.Path.join([libroot, f]);
+			if (sys.FileSystem.isDirectory(fullPath)) {
+				if (f == 'git') {
+
+					libs.push(new libraries.Git(library,
+						apps.Git.getUpstreamUrl(fullPath),
+						apps.Git.getBranch(fullPath),
+						apps.Git.getCommit(fullPath)
+					));
+
+				} else {
+				
+					var version = f.split(',').join('.');
+					libs.push(new libraries.Haxelib(library, version));
+
+				}
 			}
 		}
 
-		// next we'll check what is defined as the current version in the current file.
-		var current = Utils.cleanString(sys.io.File.read(haxe.io.Path.join([libroot, ".current"])).readAll().toString());
-		if (current == "git") {
-			// we are using the git version as the most recent version.
-
-			Io.trace("git is unimplemented");
-			return null;
-			//lib.setGit(libroot + "\\git");
-			//return lib;
-
-		} else {
-			// we are using a haxelib version.
-			
-			var lib = new libraries.Haxelib(library, current);
-			return lib;
-		}
-
-		return null;
+		return libs;
 	}
 
 	static public function runCommand(args : Array<String>) : Result {

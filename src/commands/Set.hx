@@ -11,12 +11,12 @@ class Set implements Command{
 	public function run(?buildfile : String, args : Array<String>) {
 
 		if (args[0] == null || args[1] == null) {
-			Io.error('expecting <library name> <version>');
+			Io.error('expecting <library name> <version|url|path>');
 			return;
 		}
 
-		// we only support haxelib right now, so we don't need to check anything.
-		var library = new libraries.Haxelib(args[0], args[1]);
+		var library = libraries.Tools.parse(args[0], args[1]);
+
 		// make the change locally.
 		var result = library.set();
 		switch(result) {
@@ -47,7 +47,7 @@ class Set implements Command{
 	public function isCommand(parameter : String) : Bool return parameter == name;
 
 	public function help() {
-		Io.println('Usage: haxelock set <library name> (<version> | other');
+		Io.println('Usage: haxelock set <library name> (<version|url|path> | other');
 		
 		Io.newline();
 
